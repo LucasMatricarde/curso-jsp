@@ -89,13 +89,11 @@ public class DAOUsuarioRepository {
 		return this.consultaUsuario(objeto.getLogin(), usuarioLogado);
 	}
 	
-	public List<ModelLogin> consultaUsuarioList(String nome, Long userLogado) throws Exception {
+	public List<ModelLogin> consultaUsuarioListPaginada(Long userLogado, Integer offset) throws Exception {
 		List<ModelLogin> retorno = new ArrayList<ModelLogin>();
-		String sql = "SELECT * FROM model_login WHERE UPPER(nome) LIKE UPPER(?) AND useradmin is false AND usuario_id = "+userLogado;
+		String sql = "SELECT * FROM model_login WHERE useradmin is false AND usuario_id = "+userLogado+" ORDER BY id OFFSET "+offset+" LIMIT 5";
 		PreparedStatement statement = connection.prepareStatement(sql);
 		
-		statement.setString(1, "%" + nome + "%");
-		statement.setLong(2, userLogado);
 		ResultSet resultado =  statement.executeQuery();
 		
 		while (resultado.next()) /*Se tem resultado*/ {
@@ -116,9 +114,34 @@ public class DAOUsuarioRepository {
 	
 	public List<ModelLogin> consultaUsuarioList(Long userLogado) throws Exception {
 		List<ModelLogin> retorno = new ArrayList<ModelLogin>();
-		String sql = "SELECT * FROM model_login WHERE useradmin is false AND usuario_id = "+userLogado+" ORDER BY id";
+		String sql = "SELECT * FROM model_login WHERE useradmin is false AND usuario_id = "+userLogado+" ORDER BY id LIMIT 5";
 		PreparedStatement statement = connection.prepareStatement(sql);
 		
+		ResultSet resultado =  statement.executeQuery();
+		
+		while (resultado.next()) /*Se tem resultado*/ {
+			ModelLogin modelLogin = new ModelLogin();
+			modelLogin.setId(resultado.getLong("id"));
+			modelLogin.setNome(resultado.getString("nome"));
+			modelLogin.setEmail(resultado.getString("email"));
+			modelLogin.setLogin(resultado.getString("login"));
+			modelLogin.setPerfil(resultado.getString("perfil"));
+			modelLogin.setSexo(resultado.getString("sexo"));
+			//modelLogin.setSenha(resultado.getString("senha"));
+			
+			retorno.add(modelLogin);
+		}
+		
+		return retorno;
+	}
+	
+	public List<ModelLogin> consultaUsuarioList(String nome, Long userLogado) throws Exception {
+		List<ModelLogin> retorno = new ArrayList<ModelLogin>();
+		String sql = "SELECT * FROM model_login WHERE UPPER(nome) LIKE UPPER(?) AND useradmin is false AND usuario_id = ? ORDER BY id LIMIT 5";
+		PreparedStatement statement = connection.prepareStatement(sql);
+		
+		statement.setString(1, "%" + nome + "%");
+		statement.setLong(2, userLogado);
 		ResultSet resultado =  statement.executeQuery();
 		
 		while (resultado.next()) /*Se tem resultado*/ {
@@ -286,4 +309,25 @@ public ModelLogin consultaUsuarioLogado(String login) throws Exception  {
 		connection.commit();
 	}
 	
+	//Logica para saber quantas paginas vai ter e paginar
+	public int totalPagina(Long userLogado) throws Exception {
+		
+		String sql = "SELECT COUNT(1) as total FROM model_login WHERE usuario_id = " + userLogado;
+		PreparedStatement statement = connection.prepareStatement(sql);
+		
+		ResultSet resultado = statement.executeQuery();
+		
+		resultado.next();
+		
+		Double cadastros = resultado.getDouble("total");
+		Double porPagina = 5.0;
+		Double pagina =	cadastros / porPagina;
+		Double resto = pagina % 2;
+		
+		if(resto > 0) {
+			pagina ++;
+		}
+		
+		return pagina.intValue();
+	}
 }
