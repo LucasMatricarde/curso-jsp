@@ -92,12 +92,11 @@
                           </li>
                           <li class="user-profile header-notification">
                               <a href="#!" class="waves-effect waves-light">
-                                  <img src="<%= request.getContextPath() %>/assets/images/avatar-4.jpg" class="img-radius" alt="User-Profile-Image">
-                                  <span><%= request.getSession().getAttribute("usuario") %></span>
+                                  <span><%= request.getSession().getAttribute("nomeUsuario") %></span>
                                   <i class="ti-angle-down"></i>
                               </a>
                               <ul class="show-notification profile-notification">
-                                  <li class="waves-effect waves-light">
+                                <!--   <li class="waves-effect waves-light">
                                       <a href="#!">
                                           <i class="ti-settings"></i> Settings
                                       </a>
@@ -116,7 +115,7 @@
                                       <a href="auth-lock-screen.html">
                                           <i class="ti-lock"></i> Lock Screen
                                       </a>
-                                  </li>
+                                  </li> -->
                                   <li class="waves-effect waves-light">
                                       <a href="<%=request.getContextPath() %>/ServletLogin?acao=logout">
                                           <i class="ti-layout-sidebar-left"></i> Sair

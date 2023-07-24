@@ -135,6 +135,28 @@ public class DAOUsuarioRepository {
 		return retorno;
 	}
 	
+	public int consultaUsuarioListTotalPaginaPaginacao(String nome, Long userLogado) throws Exception {
+		String sql = "SELECT COUNT(1) as total FROM model_login WHERE UPPER(nome) LIKE UPPER(?) AND useradmin is false AND usuario_id = ?";
+		PreparedStatement statement = connection.prepareStatement(sql);
+		
+		statement.setString(1, "%" + nome + "%");
+		statement.setLong(2, userLogado);
+		ResultSet resultado =  statement.executeQuery();
+		
+		resultado.next();
+		
+		Double cadastros = resultado.getDouble("total");
+		Double porPagina = 5.0;
+		Double pagina =	cadastros / porPagina;
+		Double resto = pagina % 2;
+		
+		if(resto > 0) {
+			pagina ++;
+		}
+		
+		return pagina.intValue();
+	}
+	
 	public List<ModelLogin> consultaUsuarioList(String nome, Long userLogado) throws Exception {
 		List<ModelLogin> retorno = new ArrayList<ModelLogin>();
 		String sql = "SELECT * FROM model_login WHERE UPPER(nome) LIKE UPPER(?) AND useradmin is false AND usuario_id = ? ORDER BY id LIMIT 5";
