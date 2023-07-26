@@ -338,10 +338,42 @@
 		}
 	};
 	
+	function buscarUserPagAjax(url){
+		$.ajax({
+			
+			method: 'get',
+			url: url,
+			success: function(response, textStatus, xhr){
+				var json = JSON.parse(response);
+				$('#tabelaResultado > tbody > tr').remove();
+				$("#ulPaginacaoUserAjax > li").remove();
+				
+				for(var p = 0; p < json.length; p++){//Percorre a lista q esta vindo do servlet
+					$('#tabelaResultados > tbody').append('<tr> <td>'+json[p].id+'</td> <td>'+json[p].nome+'</td> <td><button onclick="editarUser('+json[p].id+')" type="button" class="btn btn-info" data-dismiss="modal">Editar</button></td></tr>')
+				}
+				
+				document.getElementById('totalResultados').textContent = 'Resultados: ' + json.length;
+				
+				var totalPagina = xhr.getResponseHeader("totalPagina");
+				
+				for (var p = 0; p < totalPagina; p++) {
+					var url = urlAction + "?nomeBusca=" + nomeBusca + "&acao=buscarUserAjaxPage&pagina=" + (p * 5);
+					$("#ulPaginacaoUserAjax").append('<li class="page-item"><a class="page-link" onClick=buscaUserPagAjax('+url+')>'+ (p + 1) +'</a></li>');
+				}
+			}
+		}).fail(function(xhr, status, errorThrown){
+			alert('Erro ao bsucar usuário pelo nome: ' + xhr.responseText);
+		});
+	}
+	
 	function buscarUsuario(){
+		
 		var nomeBusca = document.getElementById('nomeBusca').value;
-		var urlAction = document.getElementById('formUser').action;
+		
 		if(nomeBusca != null && nomeBusca != '' && nomeBusca.trim() != ''){//Validando se tem valor para buscar no banco
+			
+			var urlAction = document.getElementById('formUser').action;
+		
 			$.ajax({
 				
 				method: 'get',
@@ -362,7 +394,7 @@
 					
 					for (var p = 0; p < totalPagina; p++) {
 						var url = urlAction + "?nomeBusca=" + nomeBusca + "&acao=buscarUserAjaxPage&pagina=" + (p * 5);
-						$("#ulPaginacaoUserAjax").append('<li class="page-item"><a class="page-link" onClick=buscaUserPagAjax('+url+')>'+ (p + 1) +'</a></li>');
+						$("#ulPaginacaoUserAjax").append('<li class="page-item"><a class="page-link" href="#" onclick="buscaUserPagAjax('+url+')">'+ (p + 1) +'</a></li>');
 					}
 				}
 			}).fail(function(xhr, status, errorThrown){
