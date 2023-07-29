@@ -190,9 +190,12 @@
                                                             	>Feminino</>
                                                             </div>
                                                             
-                                                            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="limparForm();" >Novo</button>
-												            <button type="submit" class="btn btn-success waves-effect waves-light">Salvar</button>
-												            <button type="button" class="btn btn-danger waves-effect waves-light" onclick="criarDeleteAjax();">Excluir</button>
+                                                            <button type="button" class="btn btn-primary" onclick="limparForm();" >Novo</button>
+												            <button type="submit" class="btn btn-success">Salvar</button>
+												            <button type="button" class="btn btn-danger" onclick="criarDeleteAjax();">Excluir</button>
+												            <c:if test="${modolLogin.id > 0}">
+												            	<a href="<%= request.getContextPath()%>/ServletTelefone?idUser=${modolLogin.id}" class="btn btn-warning">Telefone</a>
+												            </c:if>
 												            <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#exampleModalUsuario">Consultar</button>
                                                         </form> 
                                                    
@@ -338,34 +341,6 @@
 		}
 	};
 	
-	function buscarUserPagAjax(url){
-		$.ajax({
-			
-			method: 'get',
-			url: url,
-			success: function(response, textStatus, xhr){
-				var json = JSON.parse(response);
-				$('#tabelaResultado > tbody > tr').remove();
-				$("#ulPaginacaoUserAjax > li").remove();
-				
-				for(var p = 0; p < json.length; p++){//Percorre a lista q esta vindo do servlet
-					$('#tabelaResultados > tbody').append('<tr> <td>'+json[p].id+'</td> <td>'+json[p].nome+'</td> <td><button onclick="editarUser('+json[p].id+')" type="button" class="btn btn-info" data-dismiss="modal">Editar</button></td></tr>')
-				}
-				
-				document.getElementById('totalResultados').textContent = 'Resultados: ' + json.length;
-				
-				var totalPagina = xhr.getResponseHeader("totalPagina");
-				
-				for (var p = 0; p < totalPagina; p++) {
-					var url = urlAction + "?nomeBusca=" + nomeBusca + "&acao=buscarUserAjaxPage&pagina=" + (p * 5);
-					$("#ulPaginacaoUserAjax").append('<li class="page-item"><a class="page-link" onClick=buscaUserPagAjax('+url+')>'+ (p + 1) +'</a></li>');
-				}
-			}
-		}).fail(function(xhr, status, errorThrown){
-			alert('Erro ao bsucar usuário pelo nome: ' + xhr.responseText);
-		});
-	}
-	
 	function buscarUsuario(){
 		
 		var nomeBusca = document.getElementById('nomeBusca').value;
@@ -378,10 +353,10 @@
 				
 				method: 'get',
 				url: urlAction,
-				data: 'nome=' + nomeBusca + '&acao=buscarUserAjax',
+				data: 'nomeBusca=' + nomeBusca + '&acao=buscarUserAjax',
 				success: function(response, textStatus, xhr){
 					var json = JSON.parse(response);
-					$('#tabelaResultado > tbody > tr').remove();
+					$('#tabelaResultados > tbody > tr').remove();
 					$("#ulPaginacaoUserAjax > li").remove();
 					
 					for(var p = 0; p < json.length; p++){//Percorre a lista q esta vindo do servlet
@@ -393,15 +368,48 @@
 					var totalPagina = xhr.getResponseHeader("totalPagina");
 					
 					for (var p = 0; p < totalPagina; p++) {
-						var url = urlAction + "?nomeBusca=" + nomeBusca + "&acao=buscarUserAjaxPage&pagina=" + (p * 5);
-						$("#ulPaginacaoUserAjax").append('<li class="page-item"><a class="page-link" href="#" onclick="buscaUserPagAjax('+url+')">'+ (p + 1) +'</a></li>');
+						var url = 'nomeBusca=' + nomeBusca + '&acao=buscarUserAjaxPage&pagina=' + (p * 5);
+						$("#ulPaginacaoUserAjax").append('<li class="page-item"><a class="page-link" href="#" onclick="buscarUserPagAjax(\''+url+'\')">'+ (p + 1) +'</a></li>');
 					}
 				}
 			}).fail(function(xhr, status, errorThrown){
-				alert('Erro ao bsucar usuário pelo nome: ' + xhr.responseText);
+				alert('Erro ao buscar usuário pelo nome: ' + xhr.responseText);
 			});
 		}
 	};
+	
+	function buscarUserPagAjax(url){
+		
+		var urlAction = document.getElementById('formUser').action;
+		var nomeBusca = document.getElementById('nomeBusca').value;
+		
+		$.ajax({
+			
+			method: 'get',
+			url: urlAction,
+			data: url,
+			success: function(response, textStatus, xhr){
+				var json = JSON.parse(response);
+				$('#tabelaResultados > tbody > tr').remove();
+				$("#ulPaginacaoUserAjax > li").remove();
+				
+				for(var p = 0; p < json.length; p++){//Percorre a lista q esta vindo do servlet
+					$('#tabelaResultados > tbody').append('<tr> <td>'+json[p].id+'</td> <td>'+json[p].nome+'</td> <td><button onclick="editarUser('+json[p].id+')" type="button" class="btn btn-info" data-dismiss="modal">Editar</button></td></tr>')
+				}
+				
+				document.getElementById('totalResultados').textContent = 'Resultados: ' + json.length;
+				
+				var totalPagina = xhr.getResponseHeader("totalPagina");
+				
+				for (var p = 0; p < totalPagina; p++) {
+					var url = 'nomeBusca=' + nomeBusca + '&acao=buscarUserAjaxPage&pagina=' + (p * 5);
+					$("#ulPaginacaoUserAjax").append('<li class="page-item"><a class="page-link" href="#" onclick="buscarUserPagAjax(\''+url+'\')">'+ (p + 1) +'</a></li>');
+				}
+			}
+		}).fail(function(xhr, status, errorThrown){
+			alert('Erro ao buscar usuário pelo nome: ' + xhr.responseText);
+		});
+	}
 	
 	function visualizarImage(fotoBase64, fileFoto){
 		var preview = document.getElementById(fotoBase64); //campo img html

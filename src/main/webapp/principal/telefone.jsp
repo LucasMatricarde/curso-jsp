@@ -38,7 +38,7 @@
                                     <!-- Page-body start -->
                                     <div class="page-body">
                                         <div class="row">
-                                              <h1>Conteudo pagina base das páginas do sistema</h1>
+                                              <h1>Tela Telefone</h1>
                                         </div>
                                     </div>
                                     <!-- Page-body end -->

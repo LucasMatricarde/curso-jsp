@@ -54,7 +54,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				
 			}else if(acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarUserAjax")) {
 				
-				String nomeUsuario = request.getParameter("nome");
+				String nomeUsuario = request.getParameter("nomeBusca");
 				List<ModelLogin> dadosJson = daoUsuarioRepository.consultaUsuarioList(nomeUsuario, super.getUserLogado(request));
 				ObjectMapper object = new ObjectMapper();
 			    String json = object.writeValueAsString(dadosJson);
@@ -65,7 +65,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				
 				String nomeUsuario = request.getParameter("nomeBusca");
 				String pagina = request.getParameter("pagina");
-				List<ModelLogin> dadosJson = daoUsuarioRepository.consultaUsuarioList(nomeUsuario, super.getUserLogado(request));
+				List<ModelLogin> dadosJson = daoUsuarioRepository.consultaUsuarioListOffSet(nomeUsuario, super.getUserLogado(request), Integer.parseInt(pagina));
 				ObjectMapper object = new ObjectMapper();
 			    String json = object.writeValueAsString(dadosJson);
 			    response.addHeader("totalPagina",""+ daoUsuarioRepository.consultaUsuarioListTotalPaginaPaginacao(nomeUsuario, super.getUserLogado(request)));
