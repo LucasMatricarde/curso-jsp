@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import dao.DAOUsuarioRepository;
-import dao.DaoTelefoneRepository;
+import dao.DAOTelefoneRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,7 @@ public class ServletTelefone extends ServletGenericUtil {
 	
 	private DAOUsuarioRepository daoUsu = new DAOUsuarioRepository();
 	
-	private DaoTelefoneRepository daoFone = new DaoTelefoneRepository();
+	private DAOTelefoneRepository daoFone = new DAOTelefoneRepository();
        
     public ServletTelefone() {
     }
@@ -70,20 +70,27 @@ public class ServletTelefone extends ServletGenericUtil {
 			String usuario_pai_id = request.getParameter("id");
 			String numero = request.getParameter("numero");
 			
-			ModelTelefone modelTelefone = new ModelTelefone();
-			
-			modelTelefone.setNumero(numero);
-			modelTelefone.setUsuario_pai_id(daoUsu.consultaUsuarioID(Long.parseLong(usuario_pai_id)));
-			modelTelefone.setUsuario_cad_id(super.getUserLogadoObject(request));
-			
-			daoFone.gravaTelefone(modelTelefone);
+			if(!daoFone.existeFone(numero, Long.valueOf(usuario_pai_id))) {
+				
+				ModelTelefone modelTelefone = new ModelTelefone();
+				
+				modelTelefone.setNumero(numero);
+				modelTelefone.setUsuario_pai_id(daoUsu.consultaUsuarioID(Long.parseLong(usuario_pai_id)));
+				modelTelefone.setUsuario_cad_id(super.getUserLogadoObject(request));
+				
+				daoFone.gravaTelefone(modelTelefone);
+				
+				request.setAttribute("msg", "Salvo com sucesso");
+				
+			}else {
+				request.setAttribute("msg", "Telefone já existe");
+			}
 			
 			List<ModelTelefone> modelTelefones = daoFone.listTelefone(Long.parseLong(usuario_pai_id));
 			
 			ModelLogin modelLogin = daoUsu.consultaUsuarioID(Long.parseLong(usuario_pai_id));
 			request.setAttribute("modelLogin", modelLogin);
 			request.setAttribute("modelTelefones", modelTelefones);
-			request.setAttribute("msg", "Salvo com sucesso");
 			request.getRequestDispatcher("principal/telefone.jsp").forward(request, response);
 		}catch (Exception e) {
 			e.printStackTrace();

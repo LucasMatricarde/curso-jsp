@@ -9,12 +9,12 @@ import java.util.List;
 import connection.SingleConnectionBanco;
 import model.ModelTelefone;
 
-public class DaoTelefoneRepository {
+public class DAOTelefoneRepository {
 	
 	private Connection connection;
 	private DAOUsuarioRepository daoUsu = new DAOUsuarioRepository();
 	
-	public DaoTelefoneRepository() {
+	public DAOTelefoneRepository() {
 		connection = SingleConnectionBanco.getConnection();
 	}
 	
@@ -63,5 +63,19 @@ public class DaoTelefoneRepository {
 		
 		ps.executeUpdate();
 		connection.commit();
+	}
+	
+	public boolean existeFone(String fone, Long idUser) throws Exception {
+		String sql = "SELECT count(1) > 0 AS existe FROM telefone WHERE usuario_pai_id = ? AND numero = ?";
+		
+		PreparedStatement ps = connection.prepareStatement(sql);
+		ps.setLong(1, idUser);
+		ps.setString(2, fone);
+		
+		ResultSet rs = ps.executeQuery();
+		
+		rs.next();
+		
+		return rs.getBoolean("existe");
 	}
 }
