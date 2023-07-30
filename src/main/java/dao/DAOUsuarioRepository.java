@@ -22,7 +22,7 @@ public class DAOUsuarioRepository {
 	public ModelLogin gravarUsuario(ModelLogin objeto, Long usuarioLogado) throws Exception {
 		
 		if(objeto.isNovo()) {//Grava um novo
-			String sql = "INSERT INTO model_login(login, senha, nome, email, usuario_id, perfil, sexo, cep, logradouro, numero, bairro, localidade, estado)  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			String sql = "INSERT INTO model_login(login, senha, nome, email, usuario_id, perfil, sexo, cep, logradouro, numero, bairro, localidade, estado, dtnascimento, rendamensal)  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			PreparedStatement statement = connection.prepareStatement(sql);
 			
 			statement.setString(1, objeto.getLogin());
@@ -38,6 +38,8 @@ public class DAOUsuarioRepository {
 			statement.setString(11, objeto.getBairro());
 			statement.setString(12, objeto.getLocalidade());
 			statement.setString(13, objeto.getEstado());
+			statement.setDate(14, objeto.getDtNascimento());
+			statement.setDouble(15, objeto.getRendaMensal());
 			statement.execute();
 			
 			connection.commit();
@@ -54,7 +56,7 @@ public class DAOUsuarioRepository {
 			}
 			
 		}else {// atualizar
-			String sql = "UPDATE model_login SET login = ?, senha = ?, nome = ?, email = ?, perfil = ?, sexo = ?, cep = ?, logradouro = ?, numero = ?, bairro = ?, localidade = ?, estado = ? WHERE id = "+objeto.getId()+";";
+			String sql = "UPDATE model_login SET login = ?, senha = ?, nome = ?, email = ?, perfil = ?, sexo = ?, cep = ?, logradouro = ?, numero = ?, bairro = ?, localidade = ?, estado = ?, dtnascimento = ?, rendamensal = ? WHERE id = "+objeto.getId()+";";
 			PreparedStatement statement = connection.prepareStatement(sql);
 			
 			statement.setString(1, objeto.getLogin());
@@ -69,6 +71,8 @@ public class DAOUsuarioRepository {
 			statement.setString(10, objeto.getBairro());
 			statement.setString(11, objeto.getLocalidade());
 			statement.setString(12, objeto.getEstado());
+			statement.setDate(13, objeto.getDtNascimento());
+			statement.setDouble(14, objeto.getRendaMensal());
 			
 			statement.executeUpdate();
 			
@@ -260,6 +264,8 @@ public ModelLogin consultaUsuarioLogado(String login) throws Exception  {
 			modelLogin.setLocalidade(resultado.getString("localidade"));
 			modelLogin.setBairro(resultado.getString("bairro"));
 			modelLogin.setEstado(resultado.getString("estado"));
+			modelLogin.setDtNascimento(resultado.getDate("dtnascimento"));
+			modelLogin.setRendaMensal(resultado.getDouble("rendamensal"));
 		}
 		
 		
@@ -293,6 +299,8 @@ public ModelLogin consultaUsuarioLogado(String login) throws Exception  {
 			modelLogin.setLocalidade(resultado.getString("localidade"));
 			modelLogin.setBairro(resultado.getString("bairro"));
 			modelLogin.setEstado(resultado.getString("estado"));
+			modelLogin.setDtNascimento(resultado.getDate("dtnascimento"));
+			modelLogin.setRendaMensal(resultado.getDouble("rendamensal"));
 		}
 		
 		
@@ -304,7 +312,7 @@ public ModelLogin consultaUsuarioLogado(String login) throws Exception  {
 		
 		ModelLogin modelLogin = new ModelLogin();
 		
-		String sql = "select * from model_login where id = ? AND useradmin is false";
+		String sql = "select * from model_login where id = ?";
 		
 		PreparedStatement statement = connection.prepareStatement(sql);
 		statement.setLong(1, id);
@@ -327,6 +335,8 @@ public ModelLogin consultaUsuarioLogado(String login) throws Exception  {
 			modelLogin.setLocalidade(resultado.getString("localidade"));
 			modelLogin.setBairro(resultado.getString("bairro"));
 			modelLogin.setEstado(resultado.getString("estado"));
+			modelLogin.setDtNascimento(resultado.getDate("dtnascimento"));
+			modelLogin.setRendaMensal(resultado.getDouble("rendamensal"));
 		}
 		
 		
@@ -362,6 +372,8 @@ public ModelLogin consultaUsuarioLogado(String login) throws Exception  {
 			modelLogin.setLocalidade(resultado.getString("localidade"));
 			modelLogin.setBairro(resultado.getString("bairro"));
 			modelLogin.setEstado(resultado.getString("estado"));
+			modelLogin.setDtNascimento(resultado.getDate("dtnascimento"));
+			modelLogin.setRendaMensal(resultado.getDouble("rendamensal"));
 		}
 		
 		

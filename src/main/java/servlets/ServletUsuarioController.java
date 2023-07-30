@@ -1,6 +1,8 @@
 package servlets;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.apache.tomcat.jakartaee.commons.compress.utils.IOUtils;
@@ -139,6 +141,9 @@ public class ServletUsuarioController extends ServletGenericUtil {
 		String bairro = request.getParameter("bairro");
 		String cidade = request.getParameter("cidade");
 		String estado = request.getParameter("estado");
+		String dtNascimento = request.getParameter("dtNascimento");
+		String rendaMensal = request.getParameter("rendaMensal");
+		rendaMensal = rendaMensal.split("\\ ")[1].replaceAll("\\.", "").replaceAll("\\,", ".");
 		
 		ModelLogin modelLogin = new ModelLogin();
 		
@@ -155,6 +160,8 @@ public class ServletUsuarioController extends ServletGenericUtil {
 		modelLogin.setBairro(bairro);
 		modelLogin.setLocalidade(cidade);
 		modelLogin.setEstado(estado);
+		modelLogin.setDtNascimento(Date.valueOf(new SimpleDateFormat("yyyy-mm-dd").format(new SimpleDateFormat("dd/mm/yyyy").parse(dtNascimento))));
+		modelLogin.setRendaMensal(Double.parseDouble(rendaMensal));
 		
 		if(ServletFileUpload.isMultipartContent(request)) {
 			Part part = request.getPart("fileFoto");//Pega foto da tela

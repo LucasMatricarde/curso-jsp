@@ -21,9 +21,10 @@ public class DaoTelefoneRepository {
 	public List<ModelTelefone> listTelefone(Long id_user_pai) throws Exception {
 		List<ModelTelefone> retorno = new ArrayList<ModelTelefone>();
 		
-		String sql = "SELECT * FROM telefone WHERE user_pai_id = ?";
+		String sql = "SELECT * FROM telefone WHERE usuario_pai_id = ?";
 		
 		PreparedStatement ps = connection.prepareStatement(sql);
+		ps.setLong(1, id_user_pai);
 		
 		ResultSet rs = ps.executeQuery();
 		
