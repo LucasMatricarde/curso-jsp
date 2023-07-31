@@ -106,24 +106,25 @@
 <jsp:include page="javascripfile.jsp"></jsp:include>
 
 <script type="text/javascript">
-
+	debugger;
 	var dtInicial = $("#dtInicial").val();
-
-	var dtFormat = new Date(dtInicial);
-
-	$("#dtInicial").val(dtFormat.toLocaleDateString('pt-BR', {
-		timezone : 'UTC'
-	}));
-
+	
+	if(dtInicial != ""){
+		var dtFormat = new Date(dtInicial);
+	
+		$("#dtInicial").val(dtFormat.toLocaleDateString('pt-BR', {
+			timezone : 'UTC'
+		}));
+	}
+	
 	var dtFinal = $("#dtFinal").val();
-
-	var dtFormat1 = new Date(dtFinal);
-
-	$("#dtFinal").val(dtFormat1.toLocaleDateString('pt-BR', {
-		timezone : 'UTC'
-	}));
-
-	$("#nome").focus();
+	if(dtFinal != ""){
+		var dtFormat1 = new Date(dtFinal);
+	
+		$("#dtFinal").val(dtFormat1.toLocaleDateString('pt-BR', {
+			timezone : 'UTC'
+		}));
+	}
 
 	$( function() {
 		  $("#dtInicial").datepicker({

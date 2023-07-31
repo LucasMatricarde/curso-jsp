@@ -323,9 +323,13 @@
 	
 	var dtNascimento = $("#dtNascimento").val();
 	
-	var dtFormat = new Date(dtNascimento);
+	if(dtNascimento != ""){
 	
-	$("#dtNascimento").val(dtFormat.toLocaleDateString('pt-BR', {timezone: 'UTC'}));
+		var dtFormat = new Date(dtNascimento);
+		
+		$("#dtNascimento").val(dtFormat.toLocaleDateString('pt-BR', {timezone: 'UTC'}));
+	
+	}
 	
 	$("#nome").focus();
 
