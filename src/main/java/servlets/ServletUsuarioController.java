@@ -100,14 +100,26 @@ public class ServletUsuarioController extends ServletGenericUtil {
 					response.setHeader("Content-Disposition", "attachment;filename=arquivo." + modelLogin.getExtensaoFotoUser());
 					response.getOutputStream().write(new Base64().decodeBase64(modelLogin.getFotoUser().split("\\,")[1]));
 				}
-			}
-			else if(acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("paginar")) {
+			}else if(acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("paginar")) {
 				Integer offset = Integer.parseInt(request.getParameter("pagina"));
 				List<ModelLogin> modelLogins = daoUsuarioRepository.consultaUsuarioListPaginada(this.getUserLogado(request), offset);
 				
 				request.setAttribute("modelLogins", modelLogins);
 				request.setAttribute("totalPagina", daoUsuarioRepository.totalPagina(this.getUserLogado(request)));
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
+			}else if(acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioUser")) {
+				String dtInicial = request.getParameter("dtInicial");
+				String dtFinal = request.getParameter("dtFinal");
+				
+				if(dtInicial == null || dtInicial.isEmpty() && dtFinal == null || dtFinal.isEmpty()){
+					request.setAttribute("listaUser", daoUsuarioRepository.consultaUsuarioListRel(super.getUserLogado(request)));
+				}else {
+					request.setAttribute("listaUser", daoUsuarioRepository.consultaUsuarioListRel(super.getUserLogado(request), dtInicial, dtFinal));
+				}
+				
+				request.setAttribute("dtInicial", dtInicial);
+				request.setAttribute("dtFinal", dtFinal);
+				request.getRequestDispatcher("principal/relatorioUser.jsp").forward(request, response);
 			}else {
 				List<ModelLogin> modelLogins = daoUsuarioRepository.consultaUsuarioList(super.getUserLogado(request));
 				request.setAttribute("modelLogins", modelLogins);

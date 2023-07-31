@@ -1,19 +1,20 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import connection.SingleConnectionBanco;
 import model.ModelLogin;
+import model.ModelTelefone;
 
 public class DAOUsuarioRepository {
 	
-	
 	private Connection connection;
-	
 	
 	public DAOUsuarioRepository() {
 		connection = SingleConnectionBanco.getConnection();
@@ -110,6 +111,55 @@ public class DAOUsuarioRepository {
 			modelLogin.setSexo(resultado.getString("sexo"));
 			//modelLogin.setSenha(resultado.getString("senha"));
 			
+			retorno.add(modelLogin);
+		}
+		
+		return retorno;
+	}
+	
+	public List<ModelLogin> consultaUsuarioListRel(Long userLogado, String dtInicial, String dtFinal) throws Exception {
+		List<ModelLogin> retorno = new ArrayList<ModelLogin>();
+		String sql = "SELECT * FROM model_login WHERE useradmin is false AND usuario_id = "+userLogado+" AND dtnascimento >= ? and dtnascimento <= ? ORDER BY id";
+		PreparedStatement statement = connection.prepareStatement(sql);
+		
+		statement.setDate(1, Date.valueOf(new SimpleDateFormat("yyyy-mm-dd").format(new SimpleDateFormat("dd/mm/yyyy").parse(dtInicial))));
+		statement.setDate(2, Date.valueOf(new SimpleDateFormat("yyyy-mm-dd").format(new SimpleDateFormat("dd/mm/yyyy").parse(dtFinal))));
+		
+		ResultSet resultado =  statement.executeQuery();
+		
+		while (resultado.next()) /*Se tem resultado*/ {
+			ModelLogin modelLogin = new ModelLogin();
+			modelLogin.setId(resultado.getLong("id"));
+			modelLogin.setNome(resultado.getString("nome"));
+			modelLogin.setEmail(resultado.getString("email"));
+			modelLogin.setLogin(resultado.getString("login"));
+			modelLogin.setPerfil(resultado.getString("perfil"));
+			modelLogin.setSexo(resultado.getString("sexo"));
+			
+			modelLogin.setTelefones(this.listTelefone(modelLogin.getId()));
+			retorno.add(modelLogin);
+		}
+		
+		return retorno;
+	}
+	
+	public List<ModelLogin> consultaUsuarioListRel(Long userLogado) throws Exception {
+		List<ModelLogin> retorno = new ArrayList<ModelLogin>();
+		String sql = "SELECT * FROM model_login WHERE useradmin is false AND usuario_id = "+userLogado+" ORDER BY id";
+		PreparedStatement statement = connection.prepareStatement(sql);
+		
+		ResultSet resultado =  statement.executeQuery();
+		
+		while (resultado.next()) /*Se tem resultado*/ {
+			ModelLogin modelLogin = new ModelLogin();
+			modelLogin.setId(resultado.getLong("id"));
+			modelLogin.setNome(resultado.getString("nome"));
+			modelLogin.setEmail(resultado.getString("email"));
+			modelLogin.setLogin(resultado.getString("login"));
+			modelLogin.setPerfil(resultado.getString("perfil"));
+			modelLogin.setSexo(resultado.getString("sexo"));
+			
+			modelLogin.setTelefones(this.listTelefone(modelLogin.getId()));
 			retorno.add(modelLogin);
 		}
 		
@@ -422,5 +472,28 @@ public ModelLogin consultaUsuarioLogado(String login) throws Exception  {
 		}
 		
 		return pagina.intValue();
+	}
+	
+	public List<ModelTelefone> listTelefone(Long id_user_pai) throws Exception {
+		List<ModelTelefone> retorno = new ArrayList<ModelTelefone>();
+		
+		String sql = "SELECT * FROM telefone WHERE usuario_pai_id = ?";
+		
+		PreparedStatement ps = connection.prepareStatement(sql);
+		ps.setLong(1, id_user_pai);
+		
+		ResultSet rs = ps.executeQuery();
+		
+		while (rs.next()) {
+			ModelTelefone telefone = new ModelTelefone();
+			telefone.setId(rs.getLong("id"));
+			telefone.setNumero(rs.getString("numero"));
+			telefone.setUsuario_cad_id(this.consultaUsuarioID(rs.getLong("usuario_cad_id")));
+			telefone.setUsuario_pai_id(this.consultaUsuarioID(rs.getLong("usuario_pai_id")));
+			
+			retorno.add(telefone);
+		}
+		
+		return retorno;
 	}
 }
