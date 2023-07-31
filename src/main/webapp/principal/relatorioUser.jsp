@@ -46,7 +46,7 @@
 
 													<form class="form-material" action="<%=request.getContextPath()%>/ServletUsuarioController" method="get" id="formUser">
 
-														<input type="hidden" name="acao" value="imprimirRelatorioUser">
+														<input type="hidden" id="acaoRelatorioImprimirTipo" name="acao" value="imprimirRelatorioUser">
 														<div class="form-row align-items-center">
 															<div class="col-sm-3 my-1">
 																<label class="sr-only" for="dtInicial">Data Inicial</label> 
@@ -57,7 +57,8 @@
 																<input value="${dtFinal}" type="text" class="form-control" id="dtFinal" name="dtFinal">
 															</div>
 															<div class="col-auto my-1">
-																<button type="submit" class="btn btn-primary">Imprimir Relatório</button>
+																<button type="button" onclick="imprimirHtml();" class="btn btn-primary">Imprimir Relatório</button>
+																<button type="button" onclick="imprimirPdf();" class="btn btn-primary">Imprimir PDF</button>
 															</div>
 														</div>
 													</form>
@@ -106,7 +107,7 @@
 <jsp:include page="javascripfile.jsp"></jsp:include>
 
 <script type="text/javascript">
-	debugger;
+
 	var dtInicial = $("#dtInicial").val();
 	
 	if(dtInicial != ""){
@@ -151,6 +152,17 @@
 			    prevText: 'Anterior'
 			});
 		} );
+	
+	function imprimirPdf(){
+		document.getElementById("acaoRelatorioImprimirTipo").value = 'imprimirRelatorioPDF';
+		$("#formUser").submit();
+		return false;
+	}
+	
+	function imprimirHtml(){
+		document.getElementById("acaoRelatorioImprimirTipo").value = 'imprimirRelatorioUser';
+		$("#formUser").submit();
+	}
 </script>
 </body>
 
