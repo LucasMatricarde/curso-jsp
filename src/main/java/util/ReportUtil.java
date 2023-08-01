@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.tomcat.jakartaee.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import jakarta.servlet.ServletContext;
 import net.sf.jasperreports.engine.JRExporter;
