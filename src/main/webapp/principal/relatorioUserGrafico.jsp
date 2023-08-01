@@ -89,8 +89,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="text/javascript">
 
+	var myChart = new Chart(document.getElementById('myChart'));
+
 	function gerarGrafico(){
-		debugger;
 		var urlAction = document.getElementById('formUser').action;
 		var dtInicial = document.getElementById('dtInicial').value;
 		var dtFinal = document.getElementById('dtFinal').value;
@@ -102,7 +103,8 @@
 			data: 'dtInicial=' + dtInicial + '&dtFinal=' + dtFinal + '&acao=graficoSalario',
 			success: function(response){
 				var json = JSON.parse(response);
-				var myChart = new Chart(document.getElementById('myChart'), {
+				myChart.destroy();
+				myChart = new Chart(document.getElementById('myChart'), {
 					  type: 'line',
 					  data: {
 							labels: json.perfils,

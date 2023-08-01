@@ -163,7 +163,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 					
 					response.getWriter().write(json);
 				}else {
-					BeanGraficoSalarioUserDTO beanGrafico = daoUsuarioRepository.montarGraficoMediaSalario(super.getUserLogado(request));
+					BeanGraficoSalarioUserDTO beanGrafico = daoUsuarioRepository.montarGraficoMediaSalario(super.getUserLogado(request), dtInicial, dtFinal);
 					ObjectMapper mapper = new ObjectMapper();
 					String json = mapper.writeValueAsString(beanGrafico);
 					

@@ -21,32 +21,6 @@ public class DAOUsuarioRepository {
 		connection = SingleConnectionBanco.getConnection();
 	}
 	
-	public BeanGraficoSalarioUserDTO montarGraficoMediaSalario(Long userLogado) throws Exception {
-		String sql = "SELECT AVG(rendamensal) as media_salarial, perfil FROM model_login WHERE usuario_id = ? GROUP BY perfil";
-		PreparedStatement ps = connection.prepareStatement(sql);
-		
-		ps.setLong(1, userLogado);
-		
-		ResultSet rs = ps.executeQuery();
-		
-		List<String> perfils = new ArrayList<String>();
-		List<Double> salarios = new ArrayList<Double>();
-		BeanGraficoSalarioUserDTO beanGraficoSalario = new BeanGraficoSalarioUserDTO();
-		
-		while (rs.next()) {
-			Double media_salarial = rs.getDouble("media_salarial");
-			String perfil = rs.getString("perfil");
-			
-			perfils.add(perfil);
-			salarios.add(media_salarial);
-		}
-		
-		beanGraficoSalario.setPerfils(perfils);
-		beanGraficoSalario.setSalarios(salarios);
-		
-		return beanGraficoSalario;
-	}
-	
 	public ModelLogin gravarUsuario(ModelLogin objeto, Long usuarioLogado) throws Exception {
 		
 		if(objeto.isNovo()) {//Grava um novo
@@ -524,5 +498,59 @@ public ModelLogin consultaUsuarioLogado(String login) throws Exception  {
 		}
 		
 		return retorno;
+	}
+	
+	public BeanGraficoSalarioUserDTO montarGraficoMediaSalario(Long userLogado) throws Exception {
+		String sql = "SELECT AVG(rendamensal) as media_salarial, perfil FROM model_login WHERE usuario_id = ? GROUP BY perfil";
+		PreparedStatement ps = connection.prepareStatement(sql);
+		
+		ps.setLong(1, userLogado);
+		
+		ResultSet rs = ps.executeQuery();
+		
+		List<String> perfils = new ArrayList<String>();
+		List<Double> salarios = new ArrayList<Double>();
+		BeanGraficoSalarioUserDTO beanGraficoSalario = new BeanGraficoSalarioUserDTO();
+		
+		while (rs.next()) {
+			Double media_salarial = rs.getDouble("media_salarial");
+			String perfil = rs.getString("perfil");
+			
+			perfils.add(perfil);
+			salarios.add(media_salarial);
+		}
+		
+		beanGraficoSalario.setPerfils(perfils);
+		beanGraficoSalario.setSalarios(salarios);
+		
+		return beanGraficoSalario;
+	}
+	
+	public BeanGraficoSalarioUserDTO montarGraficoMediaSalario(Long userLogado, String dtInicial, String dtFinal) throws Exception {
+		String sql = "SELECT AVG(rendamensal) as media_salarial, perfil FROM model_login WHERE usuario_id = ? AND dtnascimento >= ? AND dtnascimento <= ? GROUP BY perfil";
+		PreparedStatement ps = connection.prepareStatement(sql);
+		
+		ps.setLong(1, userLogado);
+		ps.setDate(2, Date.valueOf(new SimpleDateFormat("yyyy-mm-dd").format(new SimpleDateFormat("dd/mm/yyyy").parse(dtInicial))));
+		ps.setDate(3, Date.valueOf(new SimpleDateFormat("yyyy-mm-dd").format(new SimpleDateFormat("dd/mm/yyyy").parse(dtFinal))));
+		
+		ResultSet rs = ps.executeQuery();
+		
+		List<String> perfils = new ArrayList<String>();
+		List<Double> salarios = new ArrayList<Double>();
+		BeanGraficoSalarioUserDTO beanGraficoSalario = new BeanGraficoSalarioUserDTO();
+		
+		while (rs.next()) {
+			Double media_salarial = rs.getDouble("media_salarial");
+			String perfil = rs.getString("perfil");
+			
+			perfils.add(perfil);
+			salarios.add(media_salarial);
+		}
+		
+		beanGraficoSalario.setPerfils(perfils);
+		beanGraficoSalario.setSalarios(salarios);
+		
+		return beanGraficoSalario;
 	}
 }
