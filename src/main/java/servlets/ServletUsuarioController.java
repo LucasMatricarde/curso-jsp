@@ -1,8 +1,10 @@
 package servlets;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.tomcat.jakartaee.commons.compress.utils.IOUtils;
@@ -11,6 +13,7 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import beanDTO.BeanGraficoSalarioUserDTO;
 import dao.DAOUsuarioRepository;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -121,7 +124,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				request.setAttribute("dtInicial", dtInicial);
 				request.setAttribute("dtFinal", dtFinal);
 				request.getRequestDispatcher("principal/relatorioUser.jsp").forward(request, response);
-			}else if(acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioPDF")) {
+			}else if(acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioPDF") || acao.equalsIgnoreCase("imprimirRelatorioExcel")) {
 				String dtInicial = request.getParameter("dtInicial");
 				String dtFinal = request.getParameter("dtFinal");
 				
@@ -132,10 +135,40 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				}else {
 					modelLogins = daoUsuarioRepository.consultaUsuarioListRel(super.getUserLogado(request), dtInicial, dtFinal);
 				}
-				byte[] relatorio = new ReportUtil().geraRelatorioPDF(modelLogins, "rel-user-jsp", request.getServletContext());
 				
-				response.setHeader("Content-Disposition", "attachment;filename=arquivo.pdf");
+				HashMap<String, Object> params = new HashMap<String, Object>();
+				params.put("PARAM_SUB_REPORT", request.getServletContext().getRealPath("relatorio") + File.separator);
+				
+				byte[] relatorio = null;
+				String extensao = "";
+				
+				if(acao.equalsIgnoreCase("imprimirRelatorioPDF")) {
+					relatorio = new ReportUtil().geraRelatorioPDF(modelLogins, "rel-user-jsp", params, request.getServletContext());
+					extensao = "pdf";
+				}else if(acao.equalsIgnoreCase("imprimirRelatorioExcel")){
+					relatorio = new ReportUtil().geraRelatorioExcel(modelLogins, "rel-user-jsp", params, request.getServletContext());
+					extensao = "xls";
+				}
+				
+				response.setHeader("Content-Disposition", "attachment;filename=arquivo." + extensao);
 				response.getOutputStream().write(relatorio);
+			}else if(acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("graficoSalario")){
+				String dtInicial = request.getParameter("dtInicial");
+				String dtFinal = request.getParameter("dtFinal");
+				
+				if(dtInicial == null || dtInicial.isEmpty() && dtFinal == null || dtFinal.isEmpty()){
+					BeanGraficoSalarioUserDTO beanGrafico = daoUsuarioRepository.montarGraficoMediaSalario(super.getUserLogado(request));
+					ObjectMapper mapper = new ObjectMapper();
+					String json = mapper.writeValueAsString(beanGrafico);
+					
+					response.getWriter().write(json);
+				}else {
+					BeanGraficoSalarioUserDTO beanGrafico = daoUsuarioRepository.montarGraficoMediaSalario(super.getUserLogado(request));
+					ObjectMapper mapper = new ObjectMapper();
+					String json = mapper.writeValueAsString(beanGrafico);
+					
+					response.getWriter().write(json);
+				}
 			}else {
 				List<ModelLogin> modelLogins = daoUsuarioRepository.consultaUsuarioList(super.getUserLogado(request));
 				request.setAttribute("modelLogins", modelLogins);
